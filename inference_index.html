@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+        }
+        #loading {
+            display: none;
+            color: blue;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Text to Speech Generator</h1>
+    <form id="ttsForm">
+        <label for="text">Text:</label>
+        <input type="text" id="text" name="text" required>
+
+        <label for="lang">Language:</label>
+        <select id="lang" name="lang" required>
+            <option value="en">English</option>
+            <option value="vi">Vietnamese</option>
+        </select>
+
+        <button type="submit">Generate Audio</button>
+    </form>
+
+    <div id="loading">Generating audio, please wait...</div>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('ttsForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            
+            const text = document.getElementById('text').value;
+            const lang = document.getElementById('lang').value;
+
+            // Show loading message
+            const loadingDiv = document.getElementById('loading');
+            loadingDiv.style.display = 'block';
+            
+            const response = await fetch('/generate_audio', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text, lang }),
+            });
+            
+            const result = await response.json();
+            
+            // Hide loading message
+            loadingDiv.style.display = 'none';
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+            
+            if (response.ok) {
+                const link = document.createElement('a');
+                link.href = result.file_url;
+                link.textContent = 'Download Audio';
+                resultDiv.appendChild(link);
+
+                const duration = document.createElement('p');
+                duration.textContent = `Duration: ${result.duration.toFixed(2)} seconds`;
+                resultDiv.appendChild(duration);
+            } else {
+                resultDiv.textContent = `Error: ${result.error}`;
+            }
+        });
+    </script>
+</body>
+</html>
