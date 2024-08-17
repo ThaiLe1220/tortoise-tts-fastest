@@ -9,13 +9,11 @@ import shutil
 import time
 
 # Measure the time to load the TextToSpeech model
-start_time = time.time()
+s = time.time()
 tts = TextToSpeech()
 tts_vi = TextToSpeech(lang="vi")
-end_time = time.time()
-print(
-    f"[WORKFLOW] Runtime for loading TextToSpeech model: {end_time - start_time:.4f} seconds\n"
-)
+e = time.time()
+print(f"[WORKFLOW] Runtime for loading TextToSpeech model: {e - s:.4f} seconds\n")
 
 
 def list_voices():
